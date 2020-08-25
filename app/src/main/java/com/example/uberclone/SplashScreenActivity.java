@@ -17,12 +17,7 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthMethodPickerLayout;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.data.client.AuthUiInitProvider;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.FirebaseError;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,19 +26,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import javax.xml.transform.Result;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Completable;
-import io.reactivex.rxjava3.functions.Action;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
@@ -107,7 +97,9 @@ public class SplashScreenActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
-                            Toast.makeText(SplashScreenActivity.this, "User already register", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(SplashScreenActivity.this, "User already register", Toast.LENGTH_SHORT).show();
+                            DriverInfoModel driverInfoModel = snapshot.getValue(DriverInfoModel.class);
+                            gotoHomeActivity(driverInfoModel);
                         } else {
                             showRegisterLayout();
                         }
@@ -119,6 +111,12 @@ public class SplashScreenActivity extends AppCompatActivity {
                         Toast.makeText(SplashScreenActivity.this, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void gotoHomeActivity(DriverInfoModel driverInfoModel) {
+        Common.currentUser = driverInfoModel; //Init value
+        startActivity(new Intent(SplashScreenActivity.this, DriverHomeActivity.class));
+        finish();
     }
 
     private void showRegisterLayout() {
@@ -167,8 +165,9 @@ public class SplashScreenActivity extends AppCompatActivity {
                             Toast.makeText(SplashScreenActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         })
                         .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Register Succefully", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(this, "Register Succefully", Toast.LENGTH_SHORT).show();
                             dialog.dismiss();
+                            gotoHomeActivity(model);
                         });
             }
         });
